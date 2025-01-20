@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { ActivityIndicator, Button, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
-import { Link, router, useNavigation } from 'expo-router'
-import { useDispatch } from 'react-redux'
-import React from 'react'
-import { setCredentials } from '@/store/auth/authSlice'
-import { useLoginMutation } from '@/store/auth/authApiSlice'
-
+import React, { useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View, Image, StatusBar, TouchableOpacity } from 'react-native';
+import { Link, router } from 'expo-router';
+import { useDispatch } from 'react-redux';
+import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { setCredentials } from '@/store/auth/authSlice';
+import { useLoginMutation } from '@/store/auth/authApiSlice';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,13 +17,13 @@ const Login = () => {
 
   const err = error as any;
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const validateEmail = () => {
     if (!email) {
       setEmailError('Email is required');
       return false;
-    } else if (!/\S+@\gmail+\.\S+/.test(email)) {
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Invalid email format');
       return false;
     }
@@ -51,60 +51,100 @@ const Login = () => {
     if (isEmailValid && isPasswordValid) {
       // Perform login logic
       Login({ email, password }).unwrap().then((data) => {
-        dispatch(setCredentials(data))
+        dispatch(setCredentials(data));
         router.back();
-        console.log(data)
+        console.log(data);
       }).catch((err) => {
-        console.log(err)
-      })
+        console.log(err);
+      });
       console.log('Logging in...');
     }
   };
 
-
   if (isLoading) {
-    return (<View style={styles.loading}>
-      <ActivityIndicator size="large" color="#f04e4e" />
-    </View>)
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#f04e4e" />
+      </View>
+    );
   }
-
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          onChangeText={text => setEmail(text)}
-          onBlur={validateEmail}
-        />
+      <StatusBar barStyle="light-content" />
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Icon name="arrow-left" size={20} color="#fff" />
+      </TouchableOpacity>
+      <Image source={require('../assets/images/logo.png')} style={styles.logo} resizeMode='contain' />
+      <View style={styles.loginContainer}>
+        <Text style={styles.welcomeText}>Welcome back</Text>
+        <Text style={styles.subText}>سجل الان في حسابك فى منصة ادعم</Text>
+
+        <View style={styles.inputContainer}>
+          <Icon name="user" size={20} color="#800000" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#800000"
+            value={email}
+            onChangeText={text => setEmail(text)}
+            onBlur={validateEmail}
+          />
+        </View>
         {emailError ? <Text style={styles.error}>{emailError}</Text> : null}
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          onChangeText={text => setPassword(text)}
-          onBlur={validatePassword}
-          secureTextEntry
-        />
+
+        <View style={styles.inputContainer}>
+          <Icon name="lock" size={20} color="#800000" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="************"
+            placeholderTextColor="#800000"
+            secureTextEntry
+            value={password}
+            onChangeText={text => setPassword(text)}
+            onBlur={validatePassword}
+          />
+        </View>
         {passwordError ? <Text style={styles.error}>{passwordError}</Text> : null}
-        <Button title="Login" onPress={handleSubmit} />
+
+        <TouchableOpacity onPress={handleSubmit}>
+          <LinearGradient
+            colors={['#800000', '#FF0000']} // Gradient from right to left
+            start={{ x: 1, y: 0 }} // Start from the right
+            end={{ x: 0, y: 0 }} // End at the left
+            style={styles.loginButton}
+          >
+            <Icon name="arrow-right" size={20} color="#fff" style={styles.buttonIcon} />
+            <Text style={styles.loginButtonText}>LOGIN</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <Pressable>
+          <Link href="/" style={styles.forgotPasswordText} asChild>
+            <Text>Forgot Password?</Text>
+          </Link>
+        </Pressable>
+
+        <Text style={styles.orText}>OR</Text>
+
+        <TouchableOpacity>
+          <LinearGradient
+            colors={['#800000', '#FF0000']} // Gradient from right to left
+            start={{ x: 1, y: 0 }} // Start from the right
+            end={{ x: 0, y: 0 }} // End at the left
+            style={styles.createAccountButton}
+          >
+            <Link href="/signUp" style={styles.createAccountText} asChild>
+              <Text>CREATE AN ACCOUNT</Text>
+            </Link>
+          </LinearGradient>
+        </TouchableOpacity>
+
         {isError ? (
           <View style={styles.boxError}>
             <Text style={styles.error}>{(err?.data.message)}</Text>
           </View>
         ) : null}
-      </View>
-      <View style={styles.linkContainer}>
-        <Pressable>
-          <Link href="/signUp" style={styles.link} asChild>
-            <Text>New User?</Text>
-          </Link>
-        </Pressable>
-        <Pressable>
-          <Link href="/" style={styles.link} asChild>
-            <Text>Forgot Password?</Text>
-          </Link>
-        </Pressable>
       </View>
     </View>
   );
@@ -112,52 +152,121 @@ const Login = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: '#181818',
+    alignItems: 'center',
   },
   loading: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
-  },
-  inputContainer: {
-    height: "80%",
     justifyContent: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginTop: 50,
+    marginBottom: 20,
+  },
+  loginContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    padding: 20,
     alignItems: 'center',
   },
-  input: {
-    width: '80%',
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000',
     marginBottom: 10,
+  },
+  subText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#800000',
+    marginBottom: 10,
+    width: '100%',
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
     padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
+    color: '#800000',
   },
   error: {
     color: 'red',
-    marginBottom: 10,
-    marginTop: 10,
+    marginTop: 5,
   },
-  linkContainer: {
-    height: "20%",
+  loginButton: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 10,
+    width: '100%',
+    height: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+    marginTop: 20,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    marginLeft: 10, // Adjust margin to align text properly
+  },
+  buttonIcon: {
+    marginRight: 10, // Adjust margin to align icon properly
+  },
+  forgotPasswordText: {
+    color: '#800000',
+    marginBottom: 20,
+  },
+  createAccountButton: {
+    width: '100%',
+    height: 50,
     justifyContent: 'center',
-    alignItems: 'center'
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    elevation: 10,
+    borderRadius: 20,
+    marginBottom: 20,
   },
-  link: {
-    marginTop: 10,
-    color: 'gray',
-    textAlign: 'center',
-    fontWeight: 'bold',
+  createAccountText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  orText: {
+    color: '#800000',
+    marginBottom: 20,
   },
   boxError: {
     marginTop: 10,
-    color: 'red',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '80%',
+    width: '100%',
     borderWidth: 1,
     borderColor: 'red',
     borderRadius: 5,
-  }
+    padding: 10,
+  },
 });
 
 export default Login;

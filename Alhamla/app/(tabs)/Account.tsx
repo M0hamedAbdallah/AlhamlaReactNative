@@ -1,52 +1,82 @@
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { Text, View } from '@/components/Themed';
-import { selectMyToken, selectMyUser } from '@/store/auth/authSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { selectMyToken, selectMyUser, logOut } from '@/store/auth/authSlice';
+import { useSelector, useDispatch } from 'react-redux';
 import UserInfo from '@/components/userInfo';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Account() {
-
   const user = useSelector(selectMyUser);
   const token = useSelector(selectMyToken);
-  
-  if(!token){
+  const dispatch = useDispatch();
+
+  if (!token) {
     return (
       <View style={styles.container}>
-        <Image source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} style={{ width: 64, height: 64 }} />
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <TouchableOpacity 
-          onPress={() => router.push('/login')} 
-          style={styles.button}>
-          <Text style={styles.title}>
-            Login
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <TouchableOpacity 
-          onPress={() => router.push('/signUp')} 
-          style={styles.button}>
-          <Text style={styles.title}>
-            SingUp
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <TouchableOpacity 
-          onPress={() => router.push('/login')} 
-          style={styles.button}>
-          <Text style={styles.title}>
-            Setting
-          </Text>
-        </TouchableOpacity>
+        <StatusBar barStyle="light-content" />
+        <View style={styles.logoContainer}>
+          <Image source={require('../../assets/images/logo.png')} resizeMode="contain" style={styles.logo} />
+        </View>
+        <View style={styles.specialContainer} >
+          <View style={styles.separator} />
+          <LinearGradient
+            colors={['#800000', '#FF0000']} // Gradient from right to left
+            start={{ x: 1, y: 0 }} // Start from the right
+            end={{ x: 0, y: 0 }} // End at the left
+            style={styles.button}
+          >
+            <TouchableOpacity onPress={() => router.push('/login')} style={styles.TouchableOpacityStyle}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+          </LinearGradient>
+          <View style={styles.separator} />
+          <LinearGradient
+            colors={['#800000', '#FF0000']} // Gradient from right to left
+            start={{ x: 1, y: 0 }} // Start from the right
+            end={{ x: 0, y: 0 }} // End at the left
+            style={styles.button}
+          >
+            <TouchableOpacity onPress={() => router.push('/signUp')} style={styles.TouchableOpacityStyle}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </TouchableOpacity>
+          </LinearGradient>
+        </View>
       </View>
     );
-  }else{
-    console.log(user)
+  } else {
     return (
-      <SafeAreaView style={styles.containerTwo}>
-        <UserInfo user={user} />
-      </SafeAreaView>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <View style={styles.logoContainer}>
+          <Image source={require('../../assets/images/logo.png')} resizeMode="contain" style={styles.logo} />
+        </View>
+        <View style={styles.specialContainer} >
+          <View style={styles.separator} />
+          <LinearGradient
+            colors={['#800000', '#FF0000']} // Gradient from right to left
+            start={{ x: 1, y: 0 }} // Start from the right
+            end={{ x: 0, y: 0 }} // End at the left
+            style={styles.button}
+          >
+            <TouchableOpacity onPress={() => router.push('/profile')}  style={styles.TouchableOpacityStyle}>
+              <Text style={styles.buttonText}>Profile</Text>
+            </TouchableOpacity>
+          </LinearGradient>
+          <View style={styles.separator} />
+          <LinearGradient
+            colors={['#800000', '#FF0000']} // Gradient from right to left
+            start={{ x: 1, y: 0 }} // Start from the right
+            end={{ x: 0, y: 0 }} // End at the left
+            style={styles.button}
+          >
+            <TouchableOpacity onPress={() => router.push('/settings')} style={styles.TouchableOpacityStyle}>
+              <Text style={styles.buttonText}>Settings</Text>
+            </TouchableOpacity>
+          </LinearGradient>
+        </View>
+      </SafeAreaView >
     );
   }
 }
@@ -54,31 +84,61 @@ export default function Account() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#181818',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  containerTwo: {
+  containerLoggedIn: {
     flex: 1,
+    backgroundColor: '#181818',
     alignItems: 'center',
-    marginTop: 50
+    justifyContent: 'center',
+    padding: 20,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
   },
   separator: {
-    marginVertical: 30,
+    marginVertical: 20,
     height: 1,
     width: '80%',
+    backgroundColor: 'transparent',
   },
-  button: {
+  logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    height: "50%",
+    width: "100%",
+    backgroundColor: 'transparent',
+  },
+  button: {
     width: '80%',
+    height: 50,
     paddingVertical: 12,
     paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 10,
-    backgroundColor: 'gray',
+    borderRadius: 10,
+    backgroundColor: '#800000',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  specialContainer: {
+    backgroundColor: '#fff',
+    width: "100%",
+    alignItems: "center",
+    height: "50%",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20
+  },
+  TouchableOpacityStyle:{
+    width:'100%',
+    height:'100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });

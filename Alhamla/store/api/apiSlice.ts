@@ -7,7 +7,7 @@ const baseQuery = fetchBaseQuery({
     prepareHeaders: (headers, { getState }: any) => {
         const token = getState()?.auth.token;
         if (token) {
-            headers.set("Authorization", token);
+            headers.set("Authorization", `Bearer ${token}`);
         }
         return headers
     }
@@ -15,6 +15,7 @@ const baseQuery = fetchBaseQuery({
 
 const apiSlice = createApi({
     baseQuery,
+    tagTypes: ['User', 'Auth', 'Category', 'Product', 'Governorates', 'State', 'Rate', 'Company', 'ProductCheck'],
     endpoints: ({ query, mutation }) => ({
         
     })
